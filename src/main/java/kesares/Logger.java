@@ -2,9 +2,17 @@ package kesares;
 
 public class Logger {
 
-    private static final Logger LOGGER = new Logger();
+    private static final Logger LOGGER = new Logger(new LogWriter("src/main/resources/logs/"));
 
-    private Logger() {}
+    private final LogWriter logWriter;
+    private boolean isConsoleLogEnabled;
+    private boolean isColoredConsoleLogEnabled;
+
+    private Logger(LogWriter logWriter) {
+        this.logWriter = logWriter;
+        this.isConsoleLogEnabled = true;
+        this.isColoredConsoleLogEnabled = false;
+    }
 
     public static Logger getLogger() {
         return LOGGER;
@@ -31,11 +39,28 @@ public class Logger {
     }
 
     public void log(String msg, String classTag, Level level) {
-        String message = String.format("%s %s%s%s %s ", Utils.formatActualDateTime(), level.getColorCode(), level, AnsiColor.DEFAULT, classTag);
-        if (level == Level.ERROR || level == Level.WARN) {
-            System.out.println(message + level.getColorCode() + msg + AnsiColor.DEFAULT);
+        String formattedDateTime = Utils.formatActualDateTime();
+        this.logWriter.writeToLog(formattedDateTime, level, classTag, msg);
+        if (!this.isConsoleLogEnabled) return;
+        this.consoleLog(formattedDateTime, level, classTag, msg);
+    }
+
+    private void consoleLog(String formattedDateTime, Level level, String classTag, String msg) {
+        if (this.isColoredConsoleLogEnabled) {
+            String coloredLogAttributes = String.format("%s %s%s%s %s: ", formattedDateTime, level.getColorCode(), level,
+                    AnsiColor.DEFAULT, classTag);
+            System.out.println(coloredLogAttributes + msg);
         } else {
-            System.out.println(message + msg);
+            String logAttributes = String.format("%s %s %s: ", formattedDateTime, level, classTag);
+            System.out.println(logAttributes + msg);
         }
+    }
+
+    public void setConsoleLogEnabled(boolean isEnabled) {
+        this.isConsoleLogEnabled = isEnabled;
+    }
+
+    public void setColoredConsoleLogEnabled(boolean isColorPrintEnabled) {
+        this.isColoredConsoleLogEnabled = isColorPrintEnabled;
     }
 }
