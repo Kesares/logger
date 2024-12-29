@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
@@ -26,7 +27,7 @@ public class LogWriter implements AutoCloseable {
                 Files.createDirectories(path);
                 System.out.println("Directory '" + path + "' created successfully");
             }
-            this.writer = Files.newBufferedWriter(filePath);
+            this.writer = Files.newBufferedWriter(filePath, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -37,8 +38,10 @@ public class LogWriter implements AutoCloseable {
             this.writer
                     .append('[')
                     .append(formattedDateTime)
-                    .append("] [main Thread/")
-                    .append(level.getName())
+                    .append("] [")
+                    .append(Thread.currentThread().getName())
+                    .append('/')
+                    .append(level.toString())
                     .append("] [")
                     .append(classTag)
                     .append("]: ")

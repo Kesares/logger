@@ -1,48 +1,72 @@
 package kesares;
 
-public class Logger {
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.HashMap;
 
-    private static final Logger LOGGER = new Logger(new LogWriter("src/main/resources/logs/"));
+public class Logger implements Loggable {
 
+    private static final HashMap<String, Logger> LOGGERS = new HashMap<>();
+
+    private final String name;
     private final LogWriter logWriter;
     private boolean isConsoleLogEnabled;
     private boolean isColoredConsoleLogEnabled;
 
-    private Logger(LogWriter logWriter) {
+    private Logger(String name, LogWriter logWriter) {
+        this.name = name;
         this.logWriter = logWriter;
         this.isConsoleLogEnabled = true;
         this.isColoredConsoleLogEnabled = false;
     }
 
-    public static Logger getLogger() {
-        return LOGGER;
+    public static Logger getLogger(String name, LogWriter logWriter) {
+        if (LOGGERS.containsKey(name)) {
+            return LOGGERS.get(name);
+        }
+        Logger logger = new Logger(name, logWriter);
+        LOGGERS.put(name, logger);
+        return logger;
     }
 
-    public void error(String msg, String classTag) {
-        this.log(msg, classTag, Level.ERROR);
+    @Override
+    public void error(String msg) {
+        this.log(msg, Level.ERROR);
     }
 
-    public void warn(String msg, String classTag) {
-        this.log(msg, classTag, Level.WARN);
+    @Override
+    public void error(Throwable throwable) {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        throwable.printStackTrace(printWriter);
+        this.log(stringWriter.toString(), Level.ERROR);
     }
 
-    public void success(String msg, String classTag) {
-        this.log(msg, classTag, Level.SUCCESS);
+    @Override
+    public void warn(String msg) {
+        this.log(msg, Level.WARN);
     }
 
-    public void debug(String msg, String classTag) {
-        this.log(msg, classTag, Level.DEBUG);
+    @Override
+    public void success(String msg) {
+        this.log(msg, Level.SUCCESS);
     }
 
-    public void log(String msg, String classTag) {
-        this.log(msg, classTag, Level.INFO);
+    @Override
+    public void debug(String msg) {
+        this.log(msg, Level.DEBUG);
     }
 
-    public void log(String msg, String classTag, Level level) {
+    @Override
+    public void log(String msg) {
+        this.log(msg, Level.INFO);
+    }
+
+    private void log(String msg, Level level) {
         String formattedDateTime = Utils.formatActualDateTime();
-        this.logWriter.writeToLog(formattedDateTime, level, classTag, msg);
+        this.logWriter.writeToLog(formattedDateTime, level, this.name, msg);
         if (!this.isConsoleLogEnabled) return;
-        this.consoleLog(formattedDateTime, level, classTag, msg);
+        this.consoleLog(formattedDateTime, level, this.name, msg);
     }
 
     private void consoleLog(String formattedDateTime, Level level, String classTag, String msg) {
