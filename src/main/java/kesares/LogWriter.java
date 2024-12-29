@@ -59,7 +59,7 @@ public class LogWriter implements AutoCloseable {
     }
 
     private String getNextFileName(String logsPath) {
-        final String currentDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        final String currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
         final int lastLogNumber = this.getLastLogNumber(logsPath, currentDate);
         return String.format("log_%s_%d.log", currentDate, lastLogNumber <= 0 ? 1 : lastLogNumber + 1);
     }

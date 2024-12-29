@@ -2,10 +2,13 @@ package kesares;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 
 public class Logger implements Loggable {
 
+    private static final DateTimeFormatter LOG_TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
     private static final HashMap<String, Logger> LOGGERS = new HashMap<>();
 
     private final String name;
@@ -63,7 +66,7 @@ public class Logger implements Loggable {
     }
 
     private void log(String msg, Level level) {
-        String formattedDateTime = Utils.formatActualDateTime();
+        String formattedDateTime = LocalDateTime.now().format(LOG_TIMESTAMP_FORMAT);
         this.logWriter.writeToLog(formattedDateTime, level, this.name, msg);
         if (!this.isConsoleLogEnabled) return;
         this.consoleLog(formattedDateTime, level, this.name, msg);
