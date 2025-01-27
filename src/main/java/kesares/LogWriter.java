@@ -61,7 +61,7 @@ public class LogWriter implements AutoCloseable {
     private String getNextFileName(String logsPath) {
         final String currentDate = LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE);
         final int lastLogNumber = this.getLastLogNumber(logsPath, currentDate);
-        return String.format("log_%s_%d.log", currentDate, lastLogNumber <= 0 ? 1 : lastLogNumber + 1);
+        return String.format("%s_%d.log", currentDate, lastLogNumber <= 0 ? 1 : lastLogNumber + 1);
     }
 
     private int getLastLogNumber(String logsPath, String currentDate) {
@@ -71,7 +71,7 @@ public class LogWriter implements AutoCloseable {
         int maxLogNumber = 0;
         for (File file : files) {
             final String name = file.getName();
-            if (name.startsWith("log_" + currentDate)) {
+            if (name.startsWith(currentDate)) {
                 final int logNumber = this.extractLogNumber(name);
                 if (logNumber > maxLogNumber) {
                     maxLogNumber = logNumber;
