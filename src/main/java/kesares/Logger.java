@@ -46,8 +46,32 @@ public class Logger implements Loggable {
     }
 
     @Override
+    public void error(String msg, Throwable throwable) {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        throwable.printStackTrace(printWriter);
+        this.log(msg + ": " + stringWriter, Level.ERROR);
+    }
+
+    @Override
     public void warn(String msg) {
         this.log(msg, Level.WARN);
+    }
+
+    @Override
+    public void warn(Throwable throwable) {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        throwable.printStackTrace(printWriter);
+        this.log(stringWriter.toString(), Level.WARN);
+    }
+
+    @Override
+    public void warn(String msg, Throwable throwable) {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        throwable.printStackTrace(printWriter);
+        this.log(msg + ": " + stringWriter, Level.WARN);
     }
 
     @Override
@@ -61,7 +85,7 @@ public class Logger implements Loggable {
     }
 
     @Override
-    public void log(String msg) {
+    public void info(String msg) {
         this.log(msg, Level.INFO);
     }
 

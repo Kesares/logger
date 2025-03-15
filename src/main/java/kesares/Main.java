@@ -7,13 +7,13 @@ public class Main {
 
     public static void main(String[] args) {
         LOGGER.setColoredConsoleLogEnabled(true);
-        LOGGER.log("Hello World!");
+        LOGGER.info("Hello World!");
         LOGGER.debug("Hello World!");
         LOGGER.success("Hello World!");
         LOGGER.warn("Hello World!");
         LOGGER.error("Hello World!");
         int i = 10 + 5;
-        LOGGER.log("Das Ergebnis von 10 + 5 ist " + i);
+        LOGGER.info("Das Ergebnis von 10 + 5 ist " + i);
 
         try {
             System.out.println(1 / 0);
